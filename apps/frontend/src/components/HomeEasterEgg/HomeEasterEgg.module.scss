@@ -1,0 +1,44 @@
+@use '../../styles/variables' as *;
+
+.trigger {
+  position: fixed;
+  right: 0.65rem;
+  bottom: 0.65rem;
+  z-index: 30;
+  width: 14px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  clip-path: polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-brick-red) 22%, transparent) 0%,
+    color-mix(in srgb, var(--color-brick-red) 12%, transparent) 100%
+  );
+  opacity: 0.35;
+  cursor: default;
+  transition: opacity 0.25s ease, transform 0.2s ease;
+}
+
+.trigger:hover,
+.trigger:focus-visible {
+  opacity: 0.55;
+  outline: none;
+}
+
+.trigger[data-progress='1'],
+.trigger[data-progress='2'] {
+  opacity: 0.5;
+  transform: scale(1.08);
+}
+
+@media (max-width: 640px) {
+  .trigger {
+    // Stay clear of the prism navigator in the bottom-right.
+    right: auto;
+    left: 0.65rem;
+    bottom: 0.65rem;
+    width: 18px;
+    height: 12px;
+  }
+}

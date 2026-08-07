@@ -1,0 +1,25 @@
+{
+  "name": "brickweb",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm run start:dev --workspace=apps/backend",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "build:backend": "npm run build --workspace=@brickweb/backend",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "start:prod:backend": "npm run start:prod --workspace=@brickweb/backend",
+    "seed": "npm run seed --workspace=apps/backend",
+    "seed:skills-timeline": "npm run seed:skills-timeline --workspace=apps/backend",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,18 @@
+@use '../../styles/variables' as *;
+
+$transition-brick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%230b0b0b'/%3E%3Crect x='1' y='1' width='58' height='28' fill='%23171717'/%3E%3Crect x='61' y='1' width='58' height='28' fill='%231a1a1a'/%3E%3Crect x='-29' y='31' width='58' height='28' fill='%23191919'/%3E%3Crect x='31' y='31' width='58' height='28' fill='%23161616'/%3E%3Crect x='91' y='31' width='58' height='28' fill='%231b1b1b'/%3E%3C/svg%3E");
+
+.wrapper {
+  position: relative;
+}
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background-color: var(--color-bg);
+  background-image: $transition-brick;
+  background-size: 240px 120px;
+  pointer-events: none;
+  will-change: transform;
+}

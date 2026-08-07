@@ -1,0 +1,79 @@
+@use '../styles/variables' as *;
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  min-height: 100vh;
+  padding: 6rem 1.5rem 6rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 4rem);
+  text-shadow: var(--title-shadow);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 42ch;
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 60ch;
+  // Anchor jumps would otherwise tuck headings under the top of the viewport.
+  scroll-margin-top: 4rem;
+  padding: 4rem 0 2rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--color-prism-gold);
+}
+
+.sectionText {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.contactLink {
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  color: var(--color-brick-red);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-brick-red) 40%, transparent);
+  transition: color $transition-base, border-color $transition-base;
+}
+
+.contactLink:hover {
+  color: var(--color-prism-gold);
+  border-color: var(--color-prism-gold);
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 5rem 1.25rem 5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 4.5rem 1rem 4rem;
+    gap: 1.25rem;
+  }
+
+  .section {
+    padding: 2.5rem 0 1.5rem;
+  }
+}

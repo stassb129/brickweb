@@ -1,0 +1,45 @@
+@use '../../styles/variables' as *;
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: var(--color-brick-red);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 4px 12px var(--accent-glow);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.visible {
+  opacity: 1;
+}
+
+:global(html[data-numb="true"]) .cursor {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(210, 230, 255, 0.95) 0%,
+    rgba(140, 180, 230, 0.35) 45%,
+    transparent 70%
+  );
+  box-shadow:
+    0 0 24px rgba(160, 200, 255, 0.7),
+    0 0 48px rgba(100, 150, 220, 0.35);
+  mix-blend-mode: screen;
+  // Prefer scale over width/height to avoid layout thrashing; position uses transform too.
+  scale: 1.5;
+}
+
+@media (pointer: coarse), (hover: none) {
+  .cursor {
+    display: none !important;
+  }
+}

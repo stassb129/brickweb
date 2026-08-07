@@ -1,0 +1,21 @@
+@use '../../styles/variables' as *;
+
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.line {
+  position: absolute;
+  max-width: min(42ch, 80vw);
+  font-family: var(--font-clash-display, #{$font-heading});
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(180, 210, 255, 0.28);
+  text-shadow: 0 0 24px rgba(100, 150, 220, 0.25);
+  white-space: pre-wrap;
+  will-change: transform, opacity;
+}

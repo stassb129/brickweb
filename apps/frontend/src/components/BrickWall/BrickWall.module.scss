@@ -1,0 +1,65 @@
+@use '../../styles/variables' as *;
+
+.wall {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem;
+  border-radius: $brick-radius;
+  scroll-margin-top: 4rem;
+  isolation: isolate;
+}
+
+// The page-wide AnimatedWallBackground now supplies the masonry texture, so
+// this panel only darkens the area behind the grid to lift the bricks off it.
+.wall::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.25) 55%,
+    transparent 85%
+  );
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.status {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+@media (max-width: 1024px) {
+  .wall {
+    padding: 1.5rem 1rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.15rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .wall {
+    padding: 1rem 0.25rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

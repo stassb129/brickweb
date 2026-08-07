@@ -1,0 +1,16 @@
+$color-bg: #0d0d0d;
+$color-surface: #1a1a1a;
+// Neon violet-blue accent (legacy name kept so existing var(--color-brick-red) still resolve).
+$color-brick-red: #9b6dff;
+$color-prism-gold: #5ce1ff;
+$color-text: #e6e6e6;
+
+$font-heading: 'Clash Display', sans-serif;
+$font-body: 'Inter', sans-serif;
+$font-mono: 'JetBrains Mono', monospace;
+
+$color-muted: #8a8a8a;
+$color-border: #262626;
+
+$brick-radius: 4px;
+$transition-base: 0.3s ease;

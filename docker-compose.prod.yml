@@ -1,0 +1,41 @@
+# Local production-like stack: Postgres + Nest API.
+# Frontend still runs on Vercel / `npm run dev:frontend`.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: brickweb-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: brickweb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d brickweb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: brickweb-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:3000
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/brickweb
+      TYPEORM_SYNC: "true"
+    ports:
+      - "4000:4000"
+
+volumes:
+  pgdata_prod:

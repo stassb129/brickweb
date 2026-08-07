@@ -1,0 +1,123 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition:
+    opacity 0.45s ease,
+    background 0.45s ease;
+}
+
+.visible {
+  opacity: 1;
+  background: rgba(4, 4, 6, 0.88);
+  pointer-events: auto;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.column {
+  position: absolute;
+  top: 8%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: rgba(155, 109, 255, 0.72);
+  will-change: transform;
+  animation: march 2.4s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.column:nth-child(even) {
+  animation-name: marchReverse;
+  color: rgba(124, 80, 220, 0.65);
+}
+
+.hammer {
+  display: block;
+  width: clamp(48px, 8vw, 88px);
+  height: clamp(48px, 8vw, 88px);
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.7));
+}
+
+.quote {
+  position: relative;
+  z-index: 1;
+  max-width: min(28rem, 88vw);
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  font-family: var(--font-clash-display, #{$font-heading});
+  font-size: clamp(1.35rem, 4.5vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  color: rgba(245, 230, 210, 0.95);
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.7s ease 0.25s,
+    transform 0.7s ease 0.25s;
+}
+
+.visible .quote {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes march {
+  0% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+  50% {
+    transform: translate3d(12vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+}
+
+@keyframes marchReverse {
+  0% {
+    transform: translate3d(12vw, 0, 0);
+  }
+  50% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(12vw, 0, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .column {
+    gap: 0.85rem;
+  }
+
+  .hammer {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .column {
+    animation: none;
+  }
+
+  .quote {
+    transition: none;
+  }
+}

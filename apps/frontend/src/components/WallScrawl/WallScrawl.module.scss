@@ -1,0 +1,40 @@
+@use '../../styles/variables' as *;
+
+.scrawl {
+  margin: 0;
+  color: var(--brick-scrawl);
+  font-family: var(--font-marker, var(--font-clash-display, #{$font-heading}));
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  transform: rotate(var(--scrawl-rotate, -3deg));
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.sm {
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+}
+
+.md {
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+}
+
+.lg {
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+}
+
+.left {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.right {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.center {
+  align-self: center;
+  text-align: center;
+}

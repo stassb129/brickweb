@@ -1,0 +1,48 @@
+@use '../../styles/variables' as *;
+
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hammer {
+  position: absolute;
+  // Opaque enough to read as a claw-hammer silhouette against the masonry,
+  // still soft enough to stay atmospheric rather than decorative stickers.
+  color: var(--hammer-color);
+  will-change: transform;
+  animation: drift var(--duration, 40s) ease-in-out var(--delay, 0s) infinite;
+}
+
+.icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes drift {
+  0% {
+    transform: rotate(var(--from, 0deg)) translateY(0);
+  }
+  50% {
+    transform: rotate(var(--to, 20deg)) translateY(-18px);
+  }
+  100% {
+    transform: rotate(var(--from, 0deg)) translateY(0);
+  }
+}
+
+// Below tablet the hammers mostly sit behind content and only cost paint time.
+@media (max-width: 1024px) {
+  .layer {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hammer {
+    animation: none;
+  }
+}

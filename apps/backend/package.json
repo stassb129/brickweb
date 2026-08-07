@@ -1,0 +1,32 @@
+{
+  "name": "@brickweb/backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start:dev": "nodemon",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "start:prod": "node dist/main.js",
+    "seed": "ts-node src/database/seeds/run-seeds.ts",
+    "seed:skills-timeline": "ts-node src/database/seeds/skills-timeline-seed.ts"
+  },
+  "dependencies": {
+    "@brickweb/shared": "*",
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/core": "^11.1.28",
+    "@nestjs/platform-express": "^11.1.28",
+    "@nestjs/typeorm": "^11.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "pg": "^8.22.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "typeorm": "^0.3.31"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
+  }
+}

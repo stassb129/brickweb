@@ -1,0 +1,45 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(20, 40, 70, 0.28);
+  backdrop-filter: blur(0px) brightness(1) saturate(1);
+  transition:
+    opacity 1s ease,
+    backdrop-filter 1s ease,
+    background 1s ease;
+  will-change: opacity, backdrop-filter;
+}
+
+.active {
+  opacity: 1;
+  background: rgba(18, 42, 78, 0.45);
+  backdrop-filter: blur(8px) brightness(0.72) saturate(0.45);
+}
+
+@media (max-width: 1024px) {
+  .active {
+    backdrop-filter: blur(5px) brightness(0.78) saturate(0.55);
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    background: rgba(20, 40, 70, 0.2);
+  }
+
+  .active {
+    background: rgba(18, 42, 78, 0.5);
+    backdrop-filter: brightness(0.75) saturate(0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    transition-duration: 0.01ms;
+  }
+}

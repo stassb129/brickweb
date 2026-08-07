@@ -1,0 +1,143 @@
+@use '../styles/variables' as *;
+
+// Night wall — sleeve ink + neon violet / cyan accents (no blood-red).
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #{$color-bg};
+  --color-surface: #{$color-surface};
+  --color-brick-red: #{$color-brick-red};
+  --color-prism-gold: #{$color-prism-gold};
+  --color-accent: #{$color-brick-red};
+  --color-accent-soft: #c4a8ff;
+  --color-text: #{$color-text};
+  --color-muted: #{$color-muted};
+  --color-border: #{$color-border};
+
+  --brick-mortar: #0c0c0c;
+  --brick-outline: #6a7580;
+  --brick-stroke: 1.25px;
+  --brick-t0: #121212;
+  --brick-t1: #151515;
+  --brick-t2: #101010;
+  --brick-t3: #181818;
+  --brick-t4: #131313;
+  --brick-warm: #1c1c1c;
+  --brick-hot: #242424;
+  --brick-scrawl: rgba(155, 109, 255, 0.7);
+
+  --wall-noise-opacity: 0.07;
+  --hammer-color: rgba(155, 109, 255, 0.16);
+  --accent-glow: rgba(155, 109, 255, 0.45);
+  --accent-glow-soft: rgba(92, 225, 255, 0.28);
+  --logo-shadow: 0 0 18px rgba(155, 109, 255, 0.35);
+  --title-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+
+  --global-speed: 1;
+}
+
+// Day wall — whitewash + deeper neon violet for contrast on light bricks.
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-brick-red: #6d3df2;
+  --color-prism-gold: #0891b2;
+  --color-accent: #6d3df2;
+  --color-accent-soft: #8b5cf6;
+  --color-text: #14181d;
+  --color-muted: #5c6874;
+  --color-border: #c6d2e0;
+
+  --brick-mortar: #f7f8fa;
+  --brick-outline: #8fa8c4;
+  --brick-stroke: 1.4px;
+  --brick-t0: #ffffff;
+  --brick-t1: #fbfcfd;
+  --brick-t2: #f8f9fb;
+  --brick-t3: #fcfdfe;
+  --brick-t4: #f6f7f9;
+  --brick-warm: #eef3f8;
+  --brick-hot: #e4edf6;
+  --brick-scrawl: rgba(109, 61, 242, 0.72);
+
+  --wall-noise-opacity: 0.035;
+  --hammer-color: rgba(109, 61, 242, 0.08);
+  --accent-glow: rgba(109, 61, 242, 0.35);
+  --accent-glow-soft: rgba(8, 145, 178, 0.22);
+  --logo-shadow: 0 0 14px rgba(109, 61, 242, 0.22);
+  --title-shadow: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  // Wall is absolutely positioned against body and grows with content.
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-inter, #{$font-body});
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-clash-display, #{$font-heading});
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

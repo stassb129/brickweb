@@ -1,0 +1,152 @@
+@use '../../styles/variables' as *;
+
+.track {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 0.25rem 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.track::-webkit-scrollbar {
+  height: 6px;
+}
+
+.track::-webkit-scrollbar-thumb {
+  background: var(--color-brick-red);
+  border-radius: 3px;
+}
+
+.mortar {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--color-brick-red) 45%, transparent),
+    transparent
+  );
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.brick {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 200px;
+  scroll-snap-align: start;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  cursor: none;
+  clip-path: polygon(
+    3% 0%,
+    97% 0%,
+    100% 8%,
+    100% 92%,
+    97% 100%,
+    3% 100%,
+    0% 92%,
+    0% 8%
+  );
+  background: linear-gradient(160deg, #2a1c1a 0%, #161010 100%);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55);
+  transition:
+    width calc(0.35s * var(--global-speed, 1)) ease,
+    box-shadow calc(0.3s * var(--global-speed, 1)) ease,
+    transform calc(0.3s * var(--global-speed, 1)) ease;
+}
+
+.brick:hover,
+.brick:focus-visible {
+  outline: none;
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.7), 0 0 14px rgba(245, 197, 66, 0.18);
+}
+
+.open {
+  width: min(420px, 85vw);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.75), 0 0 20px rgba(245, 197, 66, 0.22);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+}
+
+.year {
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: 0.75rem;
+  color: var(--color-prism-gold);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.type {
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.description {
+  margin: 0.35rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.status {
+  margin: 0;
+  padding: 2rem 0;
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+@media (max-width: 1024px) {
+  .track {
+    gap: 0.85rem;
+    padding: 1.25rem 0 1.5rem;
+  }
+
+  .brick {
+    width: 180px;
+  }
+
+  .open {
+    width: min(360px, 80vw);
+  }
+}
+
+@media (max-width: 640px) {
+  .track {
+    flex-direction: column;
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+
+  .mortar {
+    display: none;
+  }
+
+  .brick,
+  .open {
+    width: 100%;
+    cursor: pointer;
+  }
+}

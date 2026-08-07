@@ -1,0 +1,16 @@
+@use '../../styles/variables' as *;
+
+.logo {
+  position: fixed;
+  top: 1.5rem;
+  left: 2rem;
+  z-index: 50;
+  font-family: var(--font-clash-display, #{$font-heading});
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--color-brick-red);
+  text-shadow: var(--logo-shadow);
+  user-select: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}

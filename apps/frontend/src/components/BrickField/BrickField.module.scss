@@ -1,0 +1,116 @@
+@use '../../styles/variables' as *;
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--brick-mortar);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mortar {
+  fill: var(--brick-mortar);
+}
+
+.face {
+  fill: currentColor;
+}
+
+// The sleeve mark: thin, slightly uneven ink line around each brick.
+.outline {
+  fill: none;
+  stroke: var(--brick-outline);
+  stroke-width: var(--brick-stroke, 1.35);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.scratch {
+  fill: none;
+  stroke: var(--brick-outline);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+.brick {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    color 0.35s ease,
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.t0 {
+  color: var(--brick-t0);
+}
+
+.t1 {
+  color: var(--brick-t1);
+}
+
+.t2 {
+  color: var(--brick-t2);
+}
+
+.t3 {
+  color: var(--brick-t3);
+}
+
+.t4 {
+  color: var(--brick-t4);
+}
+
+.warm {
+  color: var(--brick-warm);
+}
+
+.hot {
+  color: var(--brick-hot);
+  transform: translateY(-1px);
+}
+
+.knock {
+  animation: knock 0.5s ease-out var(--knock-delay, 0s);
+}
+
+// Scrawl lives on the wall layer (behind content), never competing with UI.
+.graffiti {
+  fill: var(--brick-scrawl);
+  font-family: var(--font-marker, var(--font-clash-display, #{$font-heading}));
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@keyframes knock {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-0.6px, 1.4px);
+  }
+  55% {
+    transform: translate(0.5px, -0.8px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brick {
+    transition: none;
+  }
+
+  .knock {
+    animation: none;
+  }
+}
