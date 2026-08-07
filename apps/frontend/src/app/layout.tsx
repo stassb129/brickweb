@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Permanent_Marker } from "next/font/google";
 import localFont from "next/font/local";
 import AnimatedWallBackground from "@/components/AnimatedWallBackground/AnimatedWallBackground";
-import BrickLoader from "@/components/BrickLoader/BrickLoader";
 import ClientOverlays from "@/components/ClientOverlays/ClientOverlays";
 import CustomCursor from "@/components/CustomCursor/CustomCursor";
 import Logo from "@/components/Logo/Logo";
 import PageTransition from "@/components/PageTransition/PageTransition";
+import PrismIntro from "@/components/PrismIntro/PrismIntro";
 import PrismNavigator from "@/components/PrismNavigator/PrismNavigator";
+import SmoothScroll from "@/components/SmoothScroll/SmoothScroll";
 import ThemeToggle, { THEME_INIT_SCRIPT } from "@/components/ThemeToggle/ThemeToggle";
 import "./globals.scss";
 
@@ -60,12 +61,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body>
         <AnimatedWallBackground />
-        <BrickLoader />
         <ClientOverlays />
         <CustomCursor />
         <Logo />
         <ThemeToggle />
+        <PrismIntro />
         <PrismNavigator />
+        <SmoothScroll />
         <PageTransition>{children}</PageTransition>
       </body>
     </html>

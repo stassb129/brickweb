@@ -71,8 +71,19 @@
   --title-shadow: none;
 }
 
-* {
-  box-sizing: border-box;
+// Hard cover as soon as the boot script marks intro — before React hydrates.
+html[data-intro='playing'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  background-color: var(--brick-mortar);
+  pointer-events: all;
+}
+
+html[data-intro='playing'] {
+  // Belt-and-braces: hide page chrome under the curtain.
+  overflow: hidden;
 }
 
 html,
@@ -82,7 +93,7 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; // Custom SmoothScroll owns easing — avoid double-smoothing.
 }
 
 @media (prefers-reduced-motion: reduce) {

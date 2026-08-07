@@ -47,29 +47,73 @@ export function isAudioReady(): boolean {
 }
 
 /**
- * Short upward sweep played when the prism fans out its spectrum.
+ * Prism hover chime — file in /public/sounds.
+ * Hover alone may be blocked until the browser sees a prior gesture;
+ * we unlock quietly on the first pointer/key interaction.
  */
+const PRISM_SOUND_SRC = "/sounds/shine_sound.mp3";
+
+let prismAudio: HTMLAudioElement | null = null;
+let prismAudioUnlocked = false;
+
+function getPrismAudio(): HTMLAudioElement | null {
+  if (typeof window === "undefined") return null;
+  if (!prismAudio) {
+    prismAudio = new Audio(PRISM_SOUND_SRC);
+    prismAudio.preload = "auto";
+    prismAudio.volume = 0.55;
+  }
+  return prismAudio;
+}
+
+function unlockPrismAudio() {
+  if (prismAudioUnlocked) return;
+  const audio = getPrismAudio();
+  if (!audio) return;
+
+  const tryUnlock = () => {
+    const wasMuted = audio.muted;
+    audio.muted = true;
+    void audio
+      .play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = wasMuted;
+        prismAudioUnlocked = true;
+      })
+      .catch(() => {
+        audio.muted = wasMuted;
+      });
+  };
+
+  const onGesture = () => {
+    tryUnlock();
+    window.removeEventListener("pointerdown", onGesture);
+    window.removeEventListener("keydown", onGesture);
+  };
+
+  window.addEventListener("pointerdown", onGesture, { once: true });
+  window.addEventListener("keydown", onGesture, { once: true });
+}
+
+if (typeof window !== "undefined") {
+  unlockPrismAudio();
+}
+
+/** Played only when the pointer enters the prism triangle itself. */
 export async function playPrismSound(): Promise<void> {
-  const context = await ensureAudio();
-  if (!context) return;
+  const audio = getPrismAudio();
+  if (!audio) return;
 
-  const now = context.currentTime;
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(620, now);
-  oscillator.frequency.exponentialRampToValueAtTime(1720, now + 0.26);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.05, now + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
-
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-
-  oscillator.start(now);
-  oscillator.stop(now + 0.35);
+  try {
+    audio.pause();
+    audio.currentTime = 0;
+    await audio.play();
+    prismAudioUnlocked = true;
+  } catch {
+    // Autoplay policy — ignore until unlocked by a gesture.
+  }
 }
 
 /** Soft thud when a skill brick lands in the wall. */

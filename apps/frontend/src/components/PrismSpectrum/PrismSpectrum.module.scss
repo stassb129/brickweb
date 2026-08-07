@@ -1,0 +1,213 @@
+@use '../../styles/variables' as *;
+
+.root {
+  position: absolute;
+  top: 50%;
+  left: 72.5%;
+  z-index: 6;
+  pointer-events: none;
+  height: auto;
+  transform: translateY(-50%);
+}
+
+.open {
+  pointer-events: auto;
+}
+
+.hero {
+  width: min(460px, 62vw);
+}
+
+.intro {
+  width: min(430px, 58vw);
+}
+
+.nav {
+  width: 210px;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.open .svg {
+  pointer-events: auto;
+}
+
+// Grow from apex on open; simultaneous fade-out on close.
+.ray {
+  transform: scale(0);
+  transform-origin: 0 0;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease 0s,
+    transform 0s linear 0.2s;
+}
+
+.open .ray:not(.rayDormant) {
+  transform: scale(1);
+  opacity: 1;
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    opacity 0.16s ease 0.18s;
+}
+
+// Corner nav — all rays together, no delay (avoids “laggy / staggered” feel).
+.nav.open .ray:not(.rayDormant) {
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0s,
+    opacity 0.14s ease 0s;
+}
+
+.nav.open .ray .label {
+  transition: opacity 0.14s ease 0s;
+}
+
+// Kept mounted at scale 0 so clearing soloHref can animate them in.
+.rayDormant {
+  transform: scale(0) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+// Intro presentation — same sequence at 2× speed.
+.intro .ray {
+  transition:
+    opacity 0.4s ease 0s,
+    transform 0s linear 0.4s;
+}
+
+.intro.open .ray {
+  transition:
+    transform 0.44s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
+    opacity 0.32s ease 0.36s;
+}
+
+.intro.open .ray .label {
+  transition: opacity 0.32s ease 0.36s;
+}
+
+.bloom {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  fill-opacity: 0.36;
+}
+
+.soft {
+  mix-blend-mode: screen;
+  fill-opacity: 0.46;
+  pointer-events: none;
+  transition: fill-opacity 0.2s ease;
+}
+
+.softMock {
+  fill-opacity: 0.3;
+}
+
+.softActive {
+  fill-opacity: 0.62;
+}
+
+.hit {
+  fill: rgba(255, 255, 255, 0.001);
+  stroke: none;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.open .hit:not(.hitMock) {
+  pointer-events: visiblePainted;
+}
+
+.hitMock {
+  pointer-events: none;
+  cursor: default;
+}
+
+.link {
+  outline: none;
+
+  &:hover .soft,
+  &:focus-visible .soft {
+    fill-opacity: 0.64;
+  }
+
+  &:hover .label,
+  &:focus-visible .label {
+    opacity: 1;
+  }
+}
+
+.group .hit {
+  cursor: default;
+  pointer-events: none;
+}
+
+.label {
+  fill: #fff;
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.55);
+  stroke-width: 2.5px;
+  opacity: 0;
+  transition: opacity 0.2s ease 0s;
+  mix-blend-mode: normal;
+}
+
+.open .ray .label {
+  opacity: 0.95;
+  transition: opacity 0.16s ease 0.18s;
+}
+
+.open .rayDormant .label {
+  opacity: 0 !important;
+}
+
+.open .ray .labelMock {
+  opacity: 0.48;
+}
+
+.labelMock {
+  opacity: 0;
+}
+
+.nav .bloom {
+  fill-opacity: 0.4;
+}
+
+.nav .soft {
+  fill-opacity: 0.48;
+}
+
+.nav .label {
+  font-size: 9.5px;
+  stroke-width: 1.4px;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    width: min(280px, 78vw);
+  }
+
+  .label {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ray,
+  .open .ray,
+  .label,
+  .soft {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}

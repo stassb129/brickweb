@@ -151,6 +151,15 @@ export default function BrickField({
     };
 
     const handleMove = (event: MouseEvent) => {
+      // Quiet zone under the prism spectrum — no hot/warm brick flicker there.
+      if ((event.target as Element | null)?.closest?.("[data-mute-bricks]")) {
+        if (hotIndex !== null) {
+          paint(hotIndex, false);
+          hotIndex = null;
+        }
+        return;
+      }
+
       pending = { x: event.clientX, y: event.clientY };
       if (!frame) frame = requestAnimationFrame(flush);
     };

@@ -3,25 +3,38 @@
 .main {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 100vh;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 2rem;
-  min-height: 100vh;
-  padding: 6rem 1.5rem 6rem;
+  width: 100%;
+  padding: 2rem 1.5rem 6rem;
   text-align: center;
 }
 
-.title {
-  margin: 0;
-  font-size: clamp(2rem, 6vw, 4rem);
-  text-shadow: var(--title-shadow);
-}
-
-.subtitle {
-  margin: 0;
-  max-width: 42ch;
-  color: var(--color-muted);
-  font-size: 1rem;
-  line-height: 1.6;
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .section {
@@ -31,7 +44,6 @@
   gap: 1rem;
   width: 100%;
   max-width: 60ch;
-  // Anchor jumps would otherwise tuck headings under the top of the viewport.
   scroll-margin-top: 4rem;
   padding: 4rem 0 2rem;
 }
@@ -61,15 +73,15 @@
 }
 
 @media (max-width: 1024px) {
-  .main {
-    padding: 5rem 1.25rem 5rem;
+  .content {
+    padding: 1.5rem 1.25rem 5rem;
     gap: 1.5rem;
   }
 }
 
 @media (max-width: 640px) {
-  .main {
-    padding: 4.5rem 1rem 4rem;
+  .content {
+    padding: 1rem 1rem 4rem;
     gap: 1.25rem;
   }
 

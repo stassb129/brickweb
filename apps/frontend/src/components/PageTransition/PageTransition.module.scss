@@ -1,18 +1,35 @@
 @use '../../styles/variables' as *;
 
-$transition-brick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%230b0b0b'/%3E%3Crect x='1' y='1' width='58' height='28' fill='%23171717'/%3E%3Crect x='61' y='1' width='58' height='28' fill='%231a1a1a'/%3E%3Crect x='-29' y='31' width='58' height='28' fill='%23191919'/%3E%3Crect x='31' y='31' width='58' height='28' fill='%23161616'/%3E%3Crect x='91' y='31' width='58' height='28' fill='%231b1b1b'/%3E%3C/svg%3E");
-
 .wrapper {
   position: relative;
 }
 
-.curtain {
+.veil {
   position: fixed;
   inset: 0;
-  z-index: 150;
-  background-color: var(--color-bg);
-  background-image: $transition-brick;
-  background-size: 240px 120px;
+  z-index: 149;
+  background: var(--color-bg);
   pointer-events: none;
-  will-change: transform;
+}
+
+.spectrum {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 150;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #ff4d4d 0%,
+    #f5c542 28%,
+    #3dd68c 55%,
+    #5ce1ff 78%,
+    #7c5cff 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  will-change: transform, opacity;
 }

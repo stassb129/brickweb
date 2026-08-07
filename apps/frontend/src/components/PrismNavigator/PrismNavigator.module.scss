@@ -1,16 +1,80 @@
 @use '../../styles/variables' as *;
 
+// Root = invisible hit pad covering the whole bottom-left corner.
 .root {
   position: fixed;
-  bottom: 2.5rem;
-  left: 2.5rem;
+  left: 0;
+  bottom: 0;
   z-index: 60;
-  width: 96px;
-  height: 96px;
-
+  // Compact hit pad — enough to catch near-misses, not half the screen.
+  width: min(28vw, 200px);
+  height: min(26vh, 200px);
+  overflow: visible;
   --tilt-x: 0deg;
   --tilt-y: 0deg;
-  --sway: 0deg;
+  transition:
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.45s;
+}
+
+.stowed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.docked {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.docked.active {
+  z-index: 70;
+}
+
+// Visual prism dock — sits in the corner of the hit pad.
+.dock {
+  position: absolute;
+  left: 2.5rem;
+  bottom: 2.5rem;
+  width: 96px;
+  height: 96px;
+  transform-origin: left bottom;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stowed .dock {
+  transform: translate3d(-10px, 22px, 0) scale(0.5);
+}
+
+// Hover/open: whole prism (triangle + beams + spectrum) grows together.
+.docked.active .dock {
+  // Lift enough that the bottom ray clears the viewport edge at scale(2).
+  transform: translate3d(0, -56px, 0) scale(2);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rig {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.docked.active .rig {
+  // Freeze tilt while open — cheaper while the fan is animating.
+  transform: none;
 }
 
 .prism {
@@ -23,187 +87,184 @@
   background: none;
   color: inherit;
   cursor: none;
-  transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-  transform-style: preserve-3d;
-  transition: transform 0.25s ease-out;
-  will-change: transform;
+  pointer-events: auto;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }
 
 .prismSvg {
   display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
+  overflow: visible;
 }
 
-// The white shaft striking the prism before it splits.
 .incoming {
   position: absolute;
   top: 50%;
-  right: 100%;
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.85));
+  // Meet the triangle's left face (same as hero), not the box edge.
+  right: calc(100% - 27%);
+  z-index: 3;
+  width: 56px;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, #fff);
+  box-shadow:
+    0 0 3px rgba(255, 255, 255, 0.8),
+    0 0 8px rgba(255, 255, 255, 0.3);
+  opacity: 0;
   transform: translateY(-50%) scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.35s ease-out;
+  transform-origin: right center;
+  transition:
+    opacity 0.18s ease 0s,
+    transform 0s linear 0.18s;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-.active .incoming {
+.incomingOn {
+  opacity: 1;
   transform: translateY(-50%) scaleX(1);
+  transition:
+    opacity 0.1s ease 0s,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1) 0s;
 }
 
-.rays {
+.core {
   position: absolute;
   top: 50%;
-  left: 78%;
-  z-index: 1;
-  width: 0;
-  height: 0;
+  left: 27%;
+  z-index: 4;
+  width: 45.5%;
+  height: 1.5px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.95)
+  );
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.55);
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+  transition:
+    opacity 0.18s ease 0s,
+    transform 0s linear 0.18s;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-.ray {
+.coreOn {
+  opacity: 1;
+  transform: translateY(-50%) scaleX(1);
+  transition:
+    opacity 0.1s ease 0.05s,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+}
+
+.exitGlow {
   position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  height: 22px;
-  transform: rotate(calc(var(--angle) + var(--sway))) translateY(-50%);
-  transform-origin: left center;
-  transition: transform 0.4s ease-out;
+  top: 50%;
+  left: 72.5%;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.4) 28%,
+    rgba(255, 255, 255, 0.1) 55%,
+    rgba(255, 255, 255, 0) 78%
+  );
+  filter: blur(4px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    opacity 0.18s ease 0s,
+    transform 0s linear 0.18s;
   pointer-events: none;
 }
 
-.beam {
-  display: block;
-  width: var(--length);
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0.9),
-    var(--ray-color),
-    transparent
-  );
-  transform: scaleX(0);
-  transform-origin: left center;
-  opacity: 0;
+.exitGlowOn {
+  opacity: 1;
+  transform: scale(1);
   transition:
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) var(--delay),
-    opacity 0.3s ease var(--delay),
-    filter 0.25s ease;
-  will-change: transform, opacity;
-}
-
-.label {
-  margin-left: 0.6rem;
-  font-family: var(--font-jetbrains-mono, #{$font-mono});
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-  color: var(--ray-color);
-  opacity: 0;
-  transform: translateX(-8px);
-  transition:
-    opacity 0.3s ease var(--delay),
-    transform 0.3s ease var(--delay);
-  // Counter-rotates so text stays upright on an angled ray.
-  rotate: calc(-1 * (var(--angle) + var(--sway)));
-}
-
-.active .ray {
-  pointer-events: auto;
-}
-
-.active .beam {
-  transform: scaleX(1);
-  opacity: 1;
-}
-
-.active .label {
-  opacity: 0.75;
-  transform: translateX(0);
-}
-
-.ray:hover .beam,
-.ray:focus-visible .beam {
-  filter: drop-shadow(0 0 8px var(--ray-color)) brightness(1.4);
-  height: 3px;
-}
-
-.ray:hover .label,
-.ray:focus-visible .label {
-  opacity: 1;
-  text-shadow: 0 0 10px var(--ray-color);
-}
-
-.rayActive .beam {
-  transform: scaleX(1);
-  opacity: 1;
-  filter: drop-shadow(0 0 10px var(--ray-color)) brightness(1.35);
-  height: 3px;
-}
-
-.rayActive .label {
-  opacity: 1;
-  text-shadow: 0 0 12px var(--ray-color);
-}
-
-.ray:focus-visible {
-  outline: none;
+    opacity 0.15s ease 0.16s,
+    transform 0.15s ease 0.16s;
 }
 
 @media (max-width: 1024px) {
   .root {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    left: auto;
+    width: min(36vw, 220px);
+    height: min(30vh, 220px);
+  }
+
+  .dock {
+    left: 1.25rem;
+    // Raised so rays clear the edge and sit above the home indicator / N button.
+    bottom: 4.25rem;
     width: 80px;
     height: 80px;
   }
 
-  .beam {
-    width: calc(var(--length) * 0.7);
+  .docked.active .dock {
+    transform: translate3d(0, -36px, 0) scale(1.85);
   }
 }
 
 @media (max-width: 640px) {
   .root {
-    bottom: 1rem;
-    right: 1rem;
-    left: auto;
-    width: 56px;
-    height: 56px;
+    width: min(42vw, 200px);
+    height: min(32vh, 210px);
+  }
+
+  .dock {
+    left: 1rem;
+    bottom: 5rem;
+    width: 64px;
+    height: 64px;
+  }
+
+  .docked.active .dock {
+    transform: translate3d(0, -28px, 0) scale(1.75);
   }
 
   .prism {
     cursor: pointer;
   }
 
-  .beam {
-    width: calc(var(--length) * 0.45);
-  }
-
-  .label {
-    font-size: 0.55rem;
-  }
-
   .incoming {
-    display: none;
-  }
-
-  // Keep the wall readable: hide Lab ray on phones (still reachable via URL).
-  .ray:nth-child(3) {
     display: none;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .beam,
-  .label,
-  .ray,
+@media (hover: none), (pointer: coarse) {
   .prism {
+    cursor: pointer;
+  }
+}
+
+:global(html[data-intro='playing']) .root {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .dock,
+  .incoming,
+  .core,
+  .exitGlow {
     transition-duration: 0.01ms;
+  }
+
+  .rig {
+    transform: none;
+  }
+
+  .docked.active .dock {
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }

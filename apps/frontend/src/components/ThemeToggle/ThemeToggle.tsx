@@ -11,7 +11,7 @@ export const THEME_STORAGE_KEY = "brickweb-theme";
  * Runs before paint so the wall never flashes the wrong colour. Kept as a
  * string because it is injected into the document head.
  */
-export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('${THEME_STORAGE_KEY}');var t=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();`;
+export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('${THEME_STORAGE_KEY}');var t=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;try{sessionStorage.removeItem('brickweb:prism-intro-seen');}catch(e){}var home=location.pathname==='/'||location.pathname==='';document.documentElement.dataset.intro=home?'playing':'done';}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.intro='done';}})();`;
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("dark");
