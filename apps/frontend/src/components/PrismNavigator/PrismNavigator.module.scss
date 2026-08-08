@@ -155,9 +155,10 @@
 .coreOn {
   opacity: 1;
   transform: translateY(-50%) scaleX(1);
+  // Match PrismSpectrum .nav.open rays — same start, same ease.
   transition:
-    opacity 0.1s ease 0.05s,
-    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+    opacity 0.14s ease 0s,
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0s;
 }
 
 .exitGlow {
@@ -190,8 +191,8 @@
   opacity: 1;
   transform: scale(1);
   transition:
-    opacity 0.15s ease 0.16s,
-    transform 0.15s ease 0.16s;
+    opacity 0.14s ease 0s,
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0s;
 }
 
 @media (max-width: 1024px) {

@@ -1,8 +1,17 @@
 "use client";
 
-import { useId, useMemo, type CSSProperties, type MouseEvent as ReactMouseEvent } from "react";
 import {
+  useId,
+  useMemo,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
+import SpectrumIcon from "@/components/PrismSpectrum/SpectrumIcon";
+import {
+  beamIntoMenuPath,
   getSpectrumWedges,
+  layoutMenuBands,
+  NAV_SPECTRUM_SPAN,
   polar,
   SPECTRUM_SPAN,
   spectrumViewBox,
@@ -19,21 +28,28 @@ interface PrismSpectrumProps {
   size?: SpectrumSize;
   interactive?: boolean;
   activeHref?: string | null;
-  /**
-   * When set, other wedges stay mounted but dormant (scale 0) so they can
-   * animate in when this clears — used by the docked nav “projects lit” state.
-   */
   soloHref?: string | null;
 }
 
-const RADIUS: Record<SpectrumSize, number> = {
-  hero: 420,
-  intro: 400,
-  nav: 200,
+const NAV_RADIUS = 200;
+
+/** Beam run (apex → menu entry) in SVG units. */
+const BEAM_RUN: Record<"hero" | "intro", number> = {
+  hero: 280,
+  intro: 240,
 };
 
-const BLOOM_EXPAND = 2.4;
-const SOFT_EXPAND = 1.1;
+/** Menu plate length only — ray stops at the end of the item. */
+const MENU_RUN: Record<"hero" | "intro", number> = {
+  hero: 420,
+  intro: 360,
+};
+
+/** Half-height of the full menu stack — compact rows, still readable. */
+const PLATE_HALF: Record<"hero" | "intro", number> = {
+  hero: 268,
+  intro: 230,
+};
 
 function sectionHref(wedge: SpectrumWedge) {
   if (wedge.href === "/") return "#projects";
@@ -49,18 +65,266 @@ export default function PrismSpectrum({
 }: PrismSpectrumProps) {
   const uid = useId().replace(/:/g, "");
   const isNav = size === "nav";
-  const wedges = useMemo(() => getSpectrumWedges(SPECTRUM_SPAN), []);
+  const rich = !isNav;
+  const span = isNav ? NAV_SPECTRUM_SPAN : SPECTRUM_SPAN;
+  const wedges = useMemo(() => getSpectrumWedges(span), [span]);
+  const neonId = `spectrum-neon-${uid}`;
+  const glowId = `spectrum-glow-${uid}`;
+  const count = wedges.length;
+
+  const onNavigate = (event: ReactMouseEvent, href: string) => {
+    event.preventDefault();
+    if (href.startsWith("#")) {
+      handleHashNavigation(href, { offset: 8 });
+    } else {
+      window.location.assign(href);
+    }
+  };
+
+  if (rich) {
+    const kind = size as "hero" | "intro";
+    const pad = 24;
+    const hitX = BEAM_RUN[kind];
+    const menuEndX = hitX + MENU_RUN[kind];
+    const plateHalf = PLATE_HALF[kind];
+    const w = menuEndX + pad;
+    const h = plateHalf * 2 + pad * 2;
+    const apexX = 0;
+    const apexY = h / 2;
+    // Menu boxes first → rays aim at their top/bottom corners.
+    const bands = layoutMenuBands(count, apexY, plateHalf);
+
+    return (
+      <div
+        className={[
+          styles.root,
+          styles[size],
+          styles.rich,
+          open ? styles.open : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        aria-hidden={!open}
+        style={{ "--n": count } as CSSProperties}
+        data-mute-bricks={open ? "" : undefined}
+      >
+        <div className={styles.board}>
+          <svg
+            className={styles.svg}
+            viewBox={`0 0 ${w} ${h}`}
+            preserveAspectRatio="none"
+            overflow="visible"
+          >
+            <defs>
+              <filter
+                id={glowId}
+                x="-25%"
+                y="-25%"
+                width="150%"
+                height="150%"
+                colorInterpolationFilters="sRGB"
+              >
+                <feGaussianBlur stdDeviation="4" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter
+                id={neonId}
+                x="-80%"
+                y="-80%"
+                width="260%"
+                height="260%"
+                colorInterpolationFilters="sRGB"
+              >
+                <feGaussianBlur stdDeviation="2.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <g className={styles.beam} filter={`url(#${glowId})`}>
+              {wedges.map((wedge, i) => {
+                const box = bands[i];
+                return (
+                  <path
+                    key={wedge.href}
+                    d={beamIntoMenuPath(
+                      apexX,
+                      apexY,
+                      hitX,
+                      box.y0,
+                      box.y1,
+                    )}
+                    fill={wedge.color}
+                    className={styles.fill}
+                  />
+                );
+              })}
+            </g>
+
+            <g className={styles.neons} filter={`url(#${neonId})`}>
+              {wedges.map((wedge, i) => {
+                const box = bands[i];
+                return (
+                  <g key={wedge.href}>
+                    {/* Beam edges into the item. */}
+                    <line
+                      x1={apexX}
+                      y1={apexY}
+                      x2={hitX}
+                      y2={box.y0}
+                      stroke={wedge.color}
+                      className={styles.neon}
+                    />
+                    <line
+                      x1={apexX}
+                      y1={apexY}
+                      x2={hitX}
+                      y2={box.y1}
+                      stroke={wedge.color}
+                      className={styles.neon}
+                    />
+                    {/* Neon continues through gaps between menu rows. */}
+                    <line
+                      x1={hitX}
+                      y1={box.y0}
+                      x2={menuEndX}
+                      y2={box.y0}
+                      stroke={wedge.color}
+                      className={styles.neon}
+                    />
+                    <line
+                      x1={hitX}
+                      y1={box.y1}
+                      x2={menuEndX}
+                      y2={box.y1}
+                      stroke={wedge.color}
+                      className={styles.neon}
+                    />
+                    <line
+                      x1={apexX}
+                      y1={apexY}
+                      x2={hitX}
+                      y2={box.y0}
+                      className={styles.neonCore}
+                    />
+                    <line
+                      x1={apexX}
+                      y1={apexY}
+                      x2={hitX}
+                      y2={box.y1}
+                      className={styles.neonCore}
+                    />
+                    <line
+                      x1={hitX}
+                      y1={box.y0}
+                      x2={menuEndX}
+                      y2={box.y0}
+                      className={styles.neonCore}
+                    />
+                    <line
+                      x1={hitX}
+                      y1={box.y1}
+                      x2={menuEndX}
+                      y2={box.y1}
+                      className={styles.neonCore}
+                    />
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
+
+          <div className={styles.menu} role={interactive ? "list" : undefined}>
+            {wedges.map((wedge, i) => {
+              const box = bands[i];
+              const href = sectionHref(wedge);
+              const title = wedge.mock
+                ? `${wedge.label} · скоро`
+                : wedge.label;
+              const isActive =
+                activeHref != null && wedge.href === activeHref;
+              const dormant = Boolean(soloHref && wedge.href !== soloHref);
+
+              const rowStyle = {
+                "--c": wedge.color,
+                "--i": wedge.index,
+                "--band-h": `${((box.y1 - box.y0) / h) * 100}%`,
+                left: `${(hitX / w) * 100}%`,
+                top: `${(box.midY / h) * 100}%`,
+                width: `${((menuEndX - hitX) / w) * 100}%`,
+              } as CSSProperties;
+
+              const inner = (
+                <>
+                  <span className={styles.rowGlow} aria-hidden />
+                  <span className={styles.icon}>
+                    <SpectrumIcon name={wedge.icon} />
+                  </span>
+                  <span className={styles.copy}>
+                    <span className={styles.title}>{title}</span>
+                    <span className={styles.desc}>{wedge.description}</span>
+                  </span>
+                </>
+              );
+
+              const className = [
+                styles.row,
+                wedge.mock ? styles.rowMock : "",
+                isActive ? styles.rowActive : "",
+                dormant ? styles.rowDormant : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              if (!interactive || wedge.mock || dormant) {
+                return (
+                  <div
+                    key={wedge.href}
+                    className={className}
+                    style={rowStyle}
+                    role={interactive ? "listitem" : undefined}
+                  >
+                    {inner}
+                  </div>
+                );
+              }
+
+              return (
+                <a
+                  key={wedge.href}
+                  href={href}
+                  className={className}
+                  style={rowStyle}
+                  role="listitem"
+                  onClick={(event) => onNavigate(event, href)}
+                >
+                  {inner}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Corner nav: compact polar wedges + labels ---------------------
+  const radius = NAV_RADIUS;
+  const { apexX, apexY, w, h } = spectrumViewBox(radius, 36, span);
   const bloomId = `spectrum-bloom-${uid}`;
   const softId = `spectrum-soft-${uid}`;
-  const fadeId = `spectrum-fade-${uid}`;
-  const maskId = `spectrum-mask-${uid}`;
-  const radius = RADIUS[size];
-  const { apexX, apexY, w, h } = spectrumViewBox(radius, isNav ? 36 : 52, SPECTRUM_SPAN);
-  const count = wedges.length;
 
   return (
     <div
-      className={[styles.root, styles[size], open ? styles.open : ""].filter(Boolean).join(" ")}
+      className={[styles.root, styles.nav, open ? styles.open : ""]
+        .filter(Boolean)
+        .join(" ")}
       aria-hidden={!open}
       style={{ aspectRatio: `${w} / ${h}` }}
       data-mute-bricks={open ? "" : undefined}
@@ -80,7 +344,7 @@ export default function PrismSpectrum({
             height="200%"
             colorInterpolationFilters="sRGB"
           >
-            <feGaussianBlur stdDeviation={isNav ? 4.5 : 14} />
+            <feGaussianBlur stdDeviation={4.5} />
           </filter>
           <filter
             id={softId}
@@ -90,45 +354,37 @@ export default function PrismSpectrum({
             height="170%"
             colorInterpolationFilters="sRGB"
           >
-            <feGaussianBlur stdDeviation={isNav ? 2.2 : 5.5} />
+            <feGaussianBlur stdDeviation={2.2} />
           </filter>
-          <linearGradient id={fadeId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#fff" stopOpacity="1" />
-            <stop offset="58%" stopColor="#fff" stopOpacity="1" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-          </linearGradient>
-          <mask id={maskId}>
-            <rect width={w} height={h} fill={`url(#${fadeId})`} />
-          </mask>
         </defs>
 
         {wedges.map((wedge, index) => {
           const softD = wedgePath(
-            wedge.startDeg - SOFT_EXPAND,
-            wedge.endDeg + SOFT_EXPAND,
+            wedge.startDeg - 1.1,
+            wedge.endDeg + 1.1,
             radius,
             apexX,
             apexY,
           );
           const bloomD = wedgePath(
-            wedge.startDeg - BLOOM_EXPAND,
-            wedge.endDeg + BLOOM_EXPAND,
+            wedge.startDeg - 2.4,
+            wedge.endDeg + 2.4,
             radius * 1.04,
             apexX,
             apexY,
           );
-          const hitD = wedgePath(wedge.startDeg, wedge.endDeg, radius, apexX, apexY);
-          const labelAt = polar(wedge.midDeg, radius * 0.5, apexX, apexY);
+          const hitD = wedgePath(
+            wedge.startDeg,
+            wedge.endDeg,
+            radius,
+            apexX,
+            apexY,
+          );
+          const labelAt = polar(wedge.midDeg, radius * 0.55, apexX, apexY);
           const href = sectionHref(wedge);
-          const isHash = href.startsWith("#");
           const label = wedge.mock ? `${wedge.label} · скоро` : wedge.label;
-          const isActive = activeHref != null && wedge.href === activeHref;
           const dormant = Boolean(soloHref && wedge.href !== soloHref);
-
-          const rayStyle = {
-            "--i": index,
-            "--n": count,
-          } as CSSProperties;
+          const rayStyle = { "--i": index, "--n": count } as CSSProperties;
 
           const body = (
             <>
@@ -137,24 +393,19 @@ export default function PrismSpectrum({
                 fill={wedge.color}
                 filter={`url(#${bloomId})`}
                 className={styles.bloom}
-                mask={`url(#${maskId})`}
               />
               <path
                 d={softD}
                 fill={wedge.color}
                 filter={`url(#${softId})`}
-                mask={`url(#${maskId})`}
-                className={[
-                  styles.soft,
-                  wedge.mock ? styles.softMock : "",
-                  isActive ? styles.softActive : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
+                className={styles.soft}
               />
               <path
                 d={hitD}
-                className={[styles.hit, wedge.mock || dormant ? styles.hitMock : ""]
+                className={[
+                  styles.hit,
+                  wedge.mock || dormant ? styles.hitMock : "",
+                ]
                   .filter(Boolean)
                   .join(" ")}
               />
@@ -190,21 +441,12 @@ export default function PrismSpectrum({
             );
           }
 
-          const onClick = (event: ReactMouseEvent) => {
-            event.preventDefault();
-            if (isHash) {
-              handleHashNavigation(href, { offset: 8 });
-            } else {
-              window.location.assign(href);
-            }
-          };
-
           return (
             <a
               key={wedge.href}
               href={href}
               className={styles.link}
-              onClick={onClick}
+              onClick={(event) => onNavigate(event, href)}
             >
               {grow}
             </a>

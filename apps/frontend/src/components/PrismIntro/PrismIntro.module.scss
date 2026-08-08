@@ -185,9 +185,10 @@
 .open .core {
   opacity: 1;
   transform: translateY(-50%) scaleX(1);
+  // Match PrismSpectrum .intro.open rays (2× hero).
   transition:
-    opacity 0.24s ease 0.12s,
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+    opacity 0.32s ease 0.36s,
+    transform 0.44s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
 }
 
 .exitGlow {
@@ -220,8 +221,8 @@
   opacity: 1;
   transform: scale(1);
   transition:
-    opacity 0.36s ease 0.36s,
-    transform 0.36s ease 0.36s;
+    opacity 0.32s ease 0.36s,
+    transform 0.44s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
 }
 
 @media (prefers-reduced-motion: reduce) {

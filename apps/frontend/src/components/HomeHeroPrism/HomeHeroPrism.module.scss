@@ -124,9 +124,10 @@
 .open .core {
   opacity: 1;
   transform: translateY(-50%) scaleX(1);
+  // Same grow as PrismSpectrum hero rays — inner beam + fan move together.
   transition:
-    opacity 0.12s ease 0.06s,
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
+    opacity 0.16s ease 0.18s,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
 }
 
 .exitGlow {
@@ -159,8 +160,8 @@
   opacity: 1;
   transform: scale(1);
   transition:
-    opacity 0.18s ease 0.18s,
-    transform 0.18s ease 0.18s;
+    opacity 0.16s ease 0.18s,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
 }
 
 @media (hover: none), (pointer: coarse) {

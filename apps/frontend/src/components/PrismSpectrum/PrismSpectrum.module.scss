@@ -14,16 +14,54 @@
   pointer-events: auto;
 }
 
-.hero {
-  width: min(460px, 62vw);
+// ---------------------------------------------------------------------------
+// Hero / intro — one continuous tip→menu board with perspective
+// ---------------------------------------------------------------------------
+
+.rich {
+  left: 72.5%;
+  right: auto;
+  // Sized to beam + menu only — no empty ray past the items.
+  width: min(640px, 58vw);
+  max-width: none;
+  height: clamp(360px, 70vh, 620px);
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0.1);
+  transform-origin: left center;
+  transition:
+    opacity 0.2s ease 0s,
+    transform 0s linear 0.2s;
 }
 
-.intro {
-  width: min(430px, 58vw);
+.rich.open {
+  opacity: 1;
+  transform: translateY(-50%) scaleX(1);
+  transition:
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    opacity 0.18s ease 0.18s;
 }
 
-.nav {
-  width: 210px;
+.intro.rich {
+  right: auto;
+  width: min(560px, 54vw);
+  height: clamp(320px, 62vh, 540px);
+}
+
+.intro.rich.open {
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
+    opacity 0.32s ease 0.36s;
+}
+
+.board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  // Stronger left turn — right edge of the menu recedes.
+  transform: perspective(980px) rotateY(-24deg);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.12));
 }
 
 .svg {
@@ -34,11 +72,191 @@
   pointer-events: none;
 }
 
-.open .svg {
-  pointer-events: auto;
+.rich .svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-// Grow from apex on open; simultaneous fade-out on close.
+.fill {
+  fill-opacity: 0.4;
+  mix-blend-mode: screen;
+  stroke: none;
+}
+
+.fillPlate {
+  fill-opacity: 0.48;
+  mix-blend-mode: screen;
+  stroke: none;
+}
+
+.neon {
+  fill: none;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 1;
+}
+
+.neonCore {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.neons {
+  pointer-events: none;
+}
+
+.menu {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.row {
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.75rem;
+  align-items: center;
+  // Fill the full band — flush with neon ribs (no empty gutters).
+  height: var(--band-h, 12%);
+  min-height: 0;
+  padding: 0 1rem 0 0.55rem;
+  overflow: visible;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  isolation: isolate;
+  transform: translate(0, -50%);
+  transform-origin: left center;
+  pointer-events: auto;
+  transition: filter 0.18s ease;
+}
+
+// Fill to the ribs; neon edges match the ray.
+.rowGlow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c) 52%, transparent) 0%,
+    color-mix(in srgb, var(--c) 24%, transparent) 48%,
+    transparent 100%
+  );
+  border-top: 1.6px solid var(--c);
+  border-bottom: 1.6px solid var(--c);
+  box-shadow:
+    0 -2px 6px color-mix(in srgb, var(--c) 55%, transparent),
+    0 2px 6px color-mix(in srgb, var(--c) 55%, transparent),
+    0 0 14px color-mix(in srgb, var(--c) 28%, transparent);
+  opacity: 0.92;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.row:hover:not(.rowMock) .rowGlow,
+.row:focus-visible:not(.rowMock) .rowGlow,
+.rowActive .rowGlow {
+  opacity: 1;
+  border-top-color: color-mix(in srgb, var(--c) 65%, #fff);
+  border-bottom-color: color-mix(in srgb, var(--c) 65%, #fff);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c) 68%, transparent) 0%,
+    color-mix(in srgb, var(--c) 30%, transparent) 50%,
+    transparent 100%
+  );
+  box-shadow:
+    0 -3px 8px color-mix(in srgb, var(--c) 70%, transparent),
+    0 3px 8px color-mix(in srgb, var(--c) 70%, transparent),
+    0 0 20px color-mix(in srgb, var(--c) 40%, transparent);
+}
+
+.rowMock {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.rowDormant {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.row:hover:not(.rowMock),
+.row:focus-visible:not(.rowMock) {
+  outline: none;
+  filter: brightness(1.12);
+}
+
+.rowActive {
+  filter: brightness(1.08);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--c);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 70%, transparent));
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-jetbrains-mono, #{$font-mono});
+  font-size: clamp(0.78rem, 1.4vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: color-mix(in srgb, var(--c) 55%, #fff);
+  text-shadow:
+    0 0 8px color-mix(in srgb, var(--c) 55%, transparent),
+    0 0 6px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.desc {
+  font-family: var(--font-inter, #{$font-body});
+  font-size: clamp(0.64rem, 1.05vw, 0.8rem);
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--c) 35%, rgba(255, 255, 255, 0.88));
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ---------------------------------------------------------------------------
+// Corner nav — unchanged polar wedges
+// ---------------------------------------------------------------------------
+
+.nav {
+  width: 210px;
+}
+
 .ray {
   transform: scale(0);
   transform-origin: 0 0;
@@ -52,64 +270,26 @@
   transform: scale(1);
   opacity: 1;
   transition:
-    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
-    opacity 0.16s ease 0.18s;
-}
-
-// Corner nav — all rays together, no delay (avoids “laggy / staggered” feel).
-.nav.open .ray:not(.rayDormant) {
-  transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0s,
     opacity 0.14s ease 0s;
 }
 
-.nav.open .ray .label {
-  transition: opacity 0.14s ease 0s;
-}
-
-// Kept mounted at scale 0 so clearing soloHref can animate them in.
 .rayDormant {
   transform: scale(0) !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-// Intro presentation — same sequence at 2× speed.
-.intro .ray {
-  transition:
-    opacity 0.4s ease 0s,
-    transform 0s linear 0.4s;
-}
-
-.intro.open .ray {
-  transition:
-    transform 0.44s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
-    opacity 0.32s ease 0.36s;
-}
-
-.intro.open .ray .label {
-  transition: opacity 0.32s ease 0.36s;
-}
-
 .bloom {
   pointer-events: none;
   mix-blend-mode: screen;
-  fill-opacity: 0.36;
+  fill-opacity: 0.4;
 }
 
 .soft {
   mix-blend-mode: screen;
-  fill-opacity: 0.46;
+  fill-opacity: 0.48;
   pointer-events: none;
-  transition: fill-opacity 0.2s ease;
-}
-
-.softMock {
-  fill-opacity: 0.3;
-}
-
-.softActive {
-  fill-opacity: 0.62;
 }
 
 .hit {
@@ -150,20 +330,19 @@
 .label {
   fill: #fff;
   font-family: var(--font-jetbrains-mono, #{$font-mono});
-  font-size: 14px;
+  font-size: 9.5px;
   letter-spacing: 0.06em;
   pointer-events: none;
   paint-order: stroke;
   stroke: rgba(0, 0, 0, 0.55);
-  stroke-width: 2.5px;
+  stroke-width: 1.4px;
   opacity: 0;
   transition: opacity 0.2s ease 0s;
-  mix-blend-mode: normal;
 }
 
 .open .ray .label {
   opacity: 0.95;
-  transition: opacity 0.16s ease 0.18s;
+  transition: opacity 0.14s ease 0s;
 }
 
 .open .rayDormant .label {
@@ -178,35 +357,61 @@
   opacity: 0;
 }
 
-.nav .bloom {
-  fill-opacity: 0.4;
-}
+@media (max-width: 900px) {
+  .rich {
+    width: min(520px, 62vw);
+    height: clamp(320px, 64vh, 520px);
+  }
 
-.nav .soft {
-  fill-opacity: 0.48;
-}
-
-.nav .label {
-  font-size: 9.5px;
-  stroke-width: 1.4px;
+  .board {
+    transform: perspective(900px) rotateY(-18deg);
+  }
 }
 
 @media (max-width: 640px) {
-  .hero {
-    width: min(280px, 78vw);
+  .rich {
+    right: auto;
+    width: min(300px, 78vw);
+    height: clamp(280px, 58vh, 420px);
+    transform: translateY(-50%) scaleX(0.1);
   }
 
-  .label {
-    font-size: 10px;
+  .rich.open {
+    transform: translateY(-50%) scaleX(1);
+  }
+
+  .board {
+    transform: perspective(800px) rotateY(-12deg);
+  }
+
+  .desc {
+    display: none;
+  }
+
+  .row {
+    width: auto;
+    padding: 0 0.55rem 0 0.4rem;
+    column-gap: 0.45rem;
+  }
+
+  .icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .title {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
+  .rich,
+  .rich.open,
   .ray,
   .open .ray,
   .label,
-  .soft {
+  .row {
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
   }

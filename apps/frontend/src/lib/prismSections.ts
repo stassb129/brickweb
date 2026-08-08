@@ -5,6 +5,10 @@ export interface PrismSection {
   color: string;
   length: number;
   match: (path: string) => boolean;
+  /** Short line under the title in the refracted menu. */
+  description: string;
+  /** Lucide-ish icon key rendered by PrismSpectrum. */
+  icon: "folder" | "user" | "bulb" | "flask" | "wave" | "archive" | "send";
   /** Placeholder slot for a future section — not navigable yet. */
   mock?: boolean;
 }
@@ -20,6 +24,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: -40,
     color: "#ff2a2a",
     length: 250,
+    description: "Кейсы и выполненные работы.",
+    icon: "folder",
     match: (path) => path === "/",
   },
   {
@@ -28,6 +34,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: -27,
     color: "#ff8a00",
     length: 258,
+    description: "Путь, опыт и подход.",
+    icon: "user",
     match: (path) => path.startsWith("/about"),
   },
   {
@@ -36,6 +44,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: -14,
     color: "#ffd400",
     length: 262,
+    description: "Мысли и будущие планы.",
+    icon: "bulb",
     match: () => false,
     mock: true,
   },
@@ -45,6 +55,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: 0,
     color: "#2bd46a",
     length: 260,
+    description: "Эксперименты и пет-проекты.",
+    icon: "flask",
     match: (path) => path.startsWith("/lab"),
   },
   {
@@ -53,6 +65,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: 14,
     color: "#2ec5ff",
     length: 262,
+    description: "Аудио проекты и наработки.",
+    icon: "wave",
     match: () => false,
     mock: true,
   },
@@ -62,6 +76,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: 27,
     color: "#4570ff",
     length: 256,
+    description: "Старые проекты и черновики.",
+    icon: "archive",
     match: () => false,
     mock: true,
   },
@@ -71,6 +87,8 @@ export const PRISM_SECTIONS: PrismSection[] = [
     angle: 40,
     color: "#9b4dff",
     length: 250,
+    description: "Связь и сотрудничество.",
+    icon: "send",
     match: (path) => path.startsWith("/contact"),
   },
 ];
