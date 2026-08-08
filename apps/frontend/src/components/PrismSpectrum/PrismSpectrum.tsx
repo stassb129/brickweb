@@ -69,7 +69,8 @@ export default function PrismSpectrum({
   const span = isNav ? NAV_SPECTRUM_SPAN : SPECTRUM_SPAN;
   const wedges = useMemo(() => getSpectrumWedges(span), [span]);
   const neonId = `spectrum-neon-${uid}`;
-  const glowId = `spectrum-glow-${uid}`;
+  const neonBloomId = `spectrum-neon-bloom-${uid}`;
+  const smokeId = `spectrum-smoke-${uid}`;
   const count = wedges.length;
 
   const onNavigate = (event: ReactMouseEvent, href: string) => {
@@ -116,17 +117,33 @@ export default function PrismSpectrum({
             overflow="visible"
           >
             <defs>
+              {/* Soft smoke inside the band. */}
               <filter
-                id={glowId}
-                x="-25%"
-                y="-25%"
-                width="150%"
-                height="150%"
+                id={smokeId}
+                x="-15%"
+                y="-35%"
+                width="130%"
+                height="170%"
                 colorInterpolationFilters="sRGB"
               >
-                <feGaussianBlur stdDeviation="4" result="b" />
+                <feGaussianBlur stdDeviation="4.5" result="s" />
                 <feMerge>
-                  <feMergeNode in="b" />
+                  <feMergeNode in="s" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              {/* Moderate line glow — weaker than the overblown pass. */}
+              <filter
+                id={neonBloomId}
+                x="-140%"
+                y="-140%"
+                width="380%"
+                height="380%"
+                colorInterpolationFilters="sRGB"
+              >
+                <feGaussianBlur stdDeviation="3.6" result="wide" />
+                <feMerge>
+                  <feMergeNode in="wide" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
@@ -138,16 +155,36 @@ export default function PrismSpectrum({
                 height="260%"
                 colorInterpolationFilters="sRGB"
               >
-                <feGaussianBlur stdDeviation="2.8" result="blur" />
+                <feGaussianBlur stdDeviation="1.4" result="blur" />
                 <feMerge>
-                  <feMergeNode in="blur" />
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
+              {/* Smoke pulls color from the ribs inward; mid stays lighter. */}
+              {wedges.map((wedge, i) => {
+                const id = `track-${uid}-${i}`;
+                return (
+                  <linearGradient
+                    key={id}
+                    id={id}
+                    gradientUnits="objectBoundingBox"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor={wedge.color} stopOpacity="0.38" />
+                    <stop offset="22%" stopColor={wedge.color} stopOpacity="0.16" />
+                    <stop offset="50%" stopColor={wedge.color} stopOpacity="0.08" />
+                    <stop offset="78%" stopColor={wedge.color} stopOpacity="0.16" />
+                    <stop offset="100%" stopColor={wedge.color} stopOpacity="0.38" />
+                  </linearGradient>
+                );
+              })}
             </defs>
 
-            <g className={styles.beam} filter={`url(#${glowId})`}>
+            <g className={styles.beam}>
               {wedges.map((wedge, i) => {
                 const box = bands[i];
                 return (
@@ -160,9 +197,37 @@ export default function PrismSpectrum({
                       box.y0,
                       box.y1,
                     )}
-                    fill={wedge.color}
+                    fill={`url(#track-${uid}-${i})`}
                     className={styles.fill}
+                    filter={`url(#${smokeId})`}
                   />
+                );
+              })}
+            </g>
+
+            <g className={styles.neons} filter={`url(#${neonBloomId})`}>
+              {wedges.map((wedge, i) => {
+                const box = bands[i];
+                const edges = [
+                  [apexX, apexY, hitX, box.y0],
+                  [apexX, apexY, hitX, box.y1],
+                  [hitX, box.y0, menuEndX, box.y0],
+                  [hitX, box.y1, menuEndX, box.y1],
+                ] as const;
+                return (
+                  <g key={`bloom-${wedge.href}`}>
+                    {edges.map(([x1, y1, x2, y2], ei) => (
+                      <line
+                        key={ei}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={wedge.color}
+                        className={styles.neonBloom}
+                      />
+                    ))}
+                  </g>
                 );
               })}
             </g>
@@ -170,70 +235,35 @@ export default function PrismSpectrum({
             <g className={styles.neons} filter={`url(#${neonId})`}>
               {wedges.map((wedge, i) => {
                 const box = bands[i];
+                const edges = [
+                  [apexX, apexY, hitX, box.y0],
+                  [apexX, apexY, hitX, box.y1],
+                  [hitX, box.y0, menuEndX, box.y0],
+                  [hitX, box.y1, menuEndX, box.y1],
+                ] as const;
                 return (
                   <g key={wedge.href}>
-                    {/* Beam edges into the item. */}
-                    <line
-                      x1={apexX}
-                      y1={apexY}
-                      x2={hitX}
-                      y2={box.y0}
-                      stroke={wedge.color}
-                      className={styles.neon}
-                    />
-                    <line
-                      x1={apexX}
-                      y1={apexY}
-                      x2={hitX}
-                      y2={box.y1}
-                      stroke={wedge.color}
-                      className={styles.neon}
-                    />
-                    {/* Neon continues through gaps between menu rows. */}
-                    <line
-                      x1={hitX}
-                      y1={box.y0}
-                      x2={menuEndX}
-                      y2={box.y0}
-                      stroke={wedge.color}
-                      className={styles.neon}
-                    />
-                    <line
-                      x1={hitX}
-                      y1={box.y1}
-                      x2={menuEndX}
-                      y2={box.y1}
-                      stroke={wedge.color}
-                      className={styles.neon}
-                    />
-                    <line
-                      x1={apexX}
-                      y1={apexY}
-                      x2={hitX}
-                      y2={box.y0}
-                      className={styles.neonCore}
-                    />
-                    <line
-                      x1={apexX}
-                      y1={apexY}
-                      x2={hitX}
-                      y2={box.y1}
-                      className={styles.neonCore}
-                    />
-                    <line
-                      x1={hitX}
-                      y1={box.y0}
-                      x2={menuEndX}
-                      y2={box.y0}
-                      className={styles.neonCore}
-                    />
-                    <line
-                      x1={hitX}
-                      y1={box.y1}
-                      x2={menuEndX}
-                      y2={box.y1}
-                      className={styles.neonCore}
-                    />
+                    {edges.map(([x1, y1, x2, y2], ei) => (
+                      <line
+                        key={`n-${ei}`}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={wedge.color}
+                        className={styles.neon}
+                      />
+                    ))}
+                    {edges.map(([x1, y1, x2, y2], ei) => (
+                      <line
+                        key={`c-${ei}`}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        className={styles.neonCore}
+                      />
+                    ))}
                   </g>
                 );
               })}

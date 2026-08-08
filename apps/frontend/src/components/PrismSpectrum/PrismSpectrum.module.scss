@@ -3,8 +3,9 @@
 .root {
   position: absolute;
   top: 50%;
-  left: 72.5%;
-  z-index: 6;
+  // Tucked slightly under the prism tip so ray origin is hidden.
+  left: calc(72.5% - 10px);
+  z-index: 3;
   pointer-events: none;
   height: auto;
   transform: translateY(-50%);
@@ -19,26 +20,20 @@
 // ---------------------------------------------------------------------------
 
 .rich {
-  left: 72.5%;
+  left: calc(72.5% - 10px);
   right: auto;
   // Sized to beam + menu only — no empty ray past the items.
   width: min(640px, 58vw);
   max-width: none;
   height: clamp(360px, 70vh, 620px);
   opacity: 0;
-  transform: translateY(-50%) scaleX(0.1);
-  transform-origin: left center;
-  transition:
-    opacity 0.2s ease 0s,
-    transform 0s linear 0.2s;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease 0s;
 }
 
 .rich.open {
   opacity: 1;
-  transform: translateY(-50%) scaleX(1);
-  transition:
-    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
-    opacity 0.18s ease 0.18s;
+  transition: opacity 0.36s ease 0.18s;
 }
 
 .intro.rich {
@@ -48,9 +43,7 @@
 }
 
 .intro.rich.open {
-  transition:
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
-    opacity 0.32s ease 0.36s;
+  transition: opacity 0.55s ease 0.36s;
 }
 
 .board {
@@ -61,7 +54,7 @@
   transform: perspective(980px) rotateY(-24deg);
   transform-origin: left center;
   transform-style: preserve-3d;
-  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.12));
+  // No CSS filter here — it flattens / clips SVG neon bloom.
 }
 
 .svg {
@@ -80,32 +73,44 @@
 }
 
 .fill {
-  fill-opacity: 0.4;
+  // Opacity lives in the smoke gradient (inward haze).
+  fill-opacity: 1;
   mix-blend-mode: screen;
   stroke: none;
 }
 
 .fillPlate {
-  fill-opacity: 0.48;
+  fill-opacity: 1;
   mix-blend-mode: screen;
   stroke: none;
 }
 
+// Moderate underglow — softer than the previous overpass.
+.neonBloom {
+  fill: none;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+}
+
 .neon {
   fill: none;
-  stroke-width: 2.1;
+  stroke-width: 1;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 1;
+  mix-blend-mode: screen;
 }
 
 .neonCore {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.85);
-  stroke-width: 0.7;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 0.35;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .neons {
@@ -140,25 +145,28 @@
   transition: filter 0.18s ease;
 }
 
-// Fill to the ribs; neon edges match the ray.
+// Inward smoke + light edge glow (not blown out).
 .rowGlow {
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: 0;
   background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--c) 52%, transparent) 0%,
-    color-mix(in srgb, var(--c) 24%, transparent) 48%,
-    transparent 100%
+    180deg,
+    color-mix(in srgb, var(--c) 40%, transparent) 0%,
+    color-mix(in srgb, var(--c) 18%, transparent) 20%,
+    color-mix(in srgb, var(--c) 9%, transparent) 50%,
+    color-mix(in srgb, var(--c) 18%, transparent) 80%,
+    color-mix(in srgb, var(--c) 40%, transparent) 100%
   );
-  border-top: 1.6px solid var(--c);
-  border-bottom: 1.6px solid var(--c);
+  border-top: 0.7px solid var(--c);
+  border-bottom: 0.7px solid var(--c);
   box-shadow:
-    0 -2px 6px color-mix(in srgb, var(--c) 55%, transparent),
-    0 2px 6px color-mix(in srgb, var(--c) 55%, transparent),
-    0 0 14px color-mix(in srgb, var(--c) 28%, transparent);
-  opacity: 0.92;
+    0 -2px 8px color-mix(in srgb, var(--c) 45%, transparent),
+    0 2px 8px color-mix(in srgb, var(--c) 45%, transparent),
+    inset 0 16px 20px color-mix(in srgb, var(--c) 28%, transparent),
+    inset 0 -16px 20px color-mix(in srgb, var(--c) 28%, transparent);
+  opacity: 0.95;
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -167,18 +175,21 @@
 .row:focus-visible:not(.rowMock) .rowGlow,
 .rowActive .rowGlow {
   opacity: 1;
-  border-top-color: color-mix(in srgb, var(--c) 65%, #fff);
-  border-bottom-color: color-mix(in srgb, var(--c) 65%, #fff);
+  border-top-color: color-mix(in srgb, var(--c) 70%, #fff);
+  border-bottom-color: color-mix(in srgb, var(--c) 70%, #fff);
   background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--c) 68%, transparent) 0%,
-    color-mix(in srgb, var(--c) 30%, transparent) 50%,
-    transparent 100%
+    180deg,
+    color-mix(in srgb, var(--c) 48%, transparent) 0%,
+    color-mix(in srgb, var(--c) 22%, transparent) 20%,
+    color-mix(in srgb, var(--c) 12%, transparent) 50%,
+    color-mix(in srgb, var(--c) 22%, transparent) 80%,
+    color-mix(in srgb, var(--c) 48%, transparent) 100%
   );
   box-shadow:
-    0 -3px 8px color-mix(in srgb, var(--c) 70%, transparent),
-    0 3px 8px color-mix(in srgb, var(--c) 70%, transparent),
-    0 0 20px color-mix(in srgb, var(--c) 40%, transparent);
+    0 -3px 10px color-mix(in srgb, var(--c) 55%, transparent),
+    0 3px 10px color-mix(in srgb, var(--c) 55%, transparent),
+    inset 0 18px 22px color-mix(in srgb, var(--c) 34%, transparent),
+    inset 0 -18px 22px color-mix(in srgb, var(--c) 34%, transparent);
 }
 
 .rowMock {
@@ -229,9 +240,9 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.1;
-  color: color-mix(in srgb, var(--c) 55%, #fff);
+  color: var(--color-text);
   text-shadow:
-    0 0 8px color-mix(in srgb, var(--c) 55%, transparent),
+    0 0 8px color-mix(in srgb, var(--c) 35%, transparent),
     0 0 6px rgba(0, 0, 0, 0.65);
   white-space: nowrap;
   overflow: hidden;
@@ -258,24 +269,16 @@
 }
 
 .ray {
-  transform: scale(0);
-  transform-origin: 0 0;
   opacity: 0;
-  transition:
-    opacity 0.2s ease 0s,
-    transform 0s linear 0.2s;
+  transition: opacity 0.2s ease 0s;
 }
 
 .open .ray:not(.rayDormant) {
-  transform: scale(1);
   opacity: 1;
-  transition:
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) 0s,
-    opacity 0.14s ease 0s;
+  transition: opacity 0.28s ease 0s;
 }
 
 .rayDormant {
-  transform: scale(0) !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
@@ -373,11 +376,6 @@
     right: auto;
     width: min(300px, 78vw);
     height: clamp(280px, 58vh, 420px);
-    transform: translateY(-50%) scaleX(0.1);
-  }
-
-  .rich.open {
-    transform: translateY(-50%) scaleX(1);
   }
 
   .board {

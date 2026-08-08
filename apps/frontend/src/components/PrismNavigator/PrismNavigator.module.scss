@@ -65,7 +65,7 @@
 .rig {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 8;
   transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
   transform-style: preserve-3d;
   transform-origin: center center;
@@ -88,6 +88,7 @@
   color: inherit;
   cursor: none;
   pointer-events: auto;
+  clip-path: polygon(50% 12%, 90% 84%, 10% 84%);
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))
     drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }
@@ -97,36 +98,6 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-}
-
-.incoming {
-  position: absolute;
-  top: 50%;
-  // Meet the triangle's left face (same as hero), not the box edge.
-  right: calc(100% - 27%);
-  z-index: 3;
-  width: 56px;
-  height: 1.5px;
-  background: linear-gradient(to right, transparent, #fff);
-  box-shadow:
-    0 0 3px rgba(255, 255, 255, 0.8),
-    0 0 8px rgba(255, 255, 255, 0.3);
-  opacity: 0;
-  transform: translateY(-50%) scaleX(0);
-  transform-origin: right center;
-  transition:
-    opacity 0.18s ease 0s,
-    transform 0s linear 0.18s;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-
-.incomingOn {
-  opacity: 1;
-  transform: translateY(-50%) scaleX(1);
-  transition:
-    opacity 0.1s ease 0s,
-    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1) 0s;
 }
 
 .core {

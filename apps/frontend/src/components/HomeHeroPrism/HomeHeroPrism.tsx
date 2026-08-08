@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import IncomingBeam from "@/components/IncomingBeam/IncomingBeam";
 import PrismSpectrum from "@/components/PrismSpectrum/PrismSpectrum";
 import { PRISM_TAGLINE } from "@/lib/prismSections";
 import { playPrismSound } from "@/lib/sound";
@@ -66,9 +67,9 @@ export default function HomeHeroPrism() {
       >
         <p className={styles.tagline}>{PRISM_TAGLINE}</p>
 
-        {/* Fixed: spectrum + outer incoming beam. */}
+        {/* Fixed: spectrum + incoming beam (beam does not tilt). */}
         <PrismSpectrum open={open} size="hero" interactive />
-        <span className={styles.incoming} aria-hidden />
+        <IncomingBeam open={open} hideOnNarrow />
 
         {/* Tilts: triangle + inner beam + soft exit glow. */}
         <div className={styles.rig}>
@@ -88,7 +89,7 @@ export default function HomeHeroPrism() {
                 points="50,12 90,84 10,84"
                 fill="rgba(255,255,255,0.04)"
                 stroke="#ffffff"
-                strokeWidth="1.85"
+                strokeWidth="2.4"
                 strokeLinejoin="miter"
               />
             </svg>

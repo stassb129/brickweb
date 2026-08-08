@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import IncomingBeam from "@/components/IncomingBeam/IncomingBeam";
 import PrismSpectrum from "@/components/PrismSpectrum/PrismSpectrum";
 import styles from "./PrismNavigator.module.scss";
 
@@ -191,11 +192,8 @@ export default function PrismNavigator() {
           />
         </nav>
 
-        {/* Outer beam — fixed. */}
-        <span
-          className={`${styles.incoming} ${beamOn ? styles.incomingOn : ""}`}
-          aria-hidden
-        />
+        {/* Outer beam — fixed, does not tilt with prism. */}
+        <IncomingBeam open={beamOn} />
 
         {/* Triangle + inner beam — tilt. */}
         <div className={styles.rig}>

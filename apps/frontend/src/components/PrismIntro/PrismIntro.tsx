@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
+import IncomingBeam from "@/components/IncomingBeam/IncomingBeam";
 import PrismSpectrum from "@/components/PrismSpectrum/PrismSpectrum";
 import { PRISM_TAGLINE } from "@/lib/prismSections";
 import styles from "./PrismIntro.module.scss";
@@ -118,7 +119,7 @@ export default function PrismIntro() {
       {showPrism && (
         <div className={`${styles.stage} ${raysOpen ? styles.open : ""}`}>
           <p className={styles.tagline}>{PRISM_TAGLINE}</p>
-          <span className={styles.incoming} />
+          <IncomingBeam open={raysOpen} />
           <span className={styles.core} />
           <span className={styles.exitGlow} />
 
@@ -128,7 +129,7 @@ export default function PrismIntro() {
                 points="50,12 90,84 10,84"
                 fill="rgba(255,255,255,0.04)"
                 stroke="#ffffff"
-                strokeWidth="1.85"
+                strokeWidth="2.4"
                 strokeLinejoin="miter"
               />
             </svg>
